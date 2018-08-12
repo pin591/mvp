@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -14,15 +15,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var randomUsers = Set<User>()
     var selectedUser: User?
     
-    var url = URL(string: "https://api.randomuser.me/?results=40")!
+    var url = URL(string: "https://api.randomuser.me/?results=2")!
     lazy var configuration: URLSessionConfiguration = URLSessionConfiguration.default
     lazy var session: URLSession = URLSession(configuration: self.configuration)
     typealias JSONDictionaryHandler = (([String:AnyObject]?) -> Void)
 
     
+    @IBAction func FetchUser(_ sender: Any) {
+        downloadJSONFromURL(_completion: { (data) in })
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        downloadJSONFromURL(_completion: { (data) in })
+        fetchLocalRepos()
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,6 +66,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         self.randomUsers.insert(currentUser)
         DispatchQueue.main.async { [unowned self] in
+            self.saveUserLocally(user: currentUser)
             self.tableView.reloadData()
         }
     }
@@ -93,5 +99,64 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             }
         }
         dataTask.resume()
+    }
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
+    {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+            let position = self.randomUsers.index(self.randomUsers.startIndex, offsetBy: indexPath.row)
+            self.selectedUser = self.randomUsers[position]
+            self.randomUsers.remove(at: position)
+            self.tableView.reloadData()
+        }
+        deleteAction.backgroundColor = .gray
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
+    func saveUserLocally(user: User) {
+        
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "UserEntity", in: context)
+        let newUser = NSManagedObject(entity: entity!, insertInto: context)
+        newUser.setValue(user.name, forKey: "name")
+        newUser.setValue(user.surname, forKey: "surname")
+        newUser.setValue(user.gender, forKey: "gender")
+        newUser.setValue(user.email, forKey: "email")
+        newUser.setValue(user.picture, forKey: "picture")
+        newUser.setValue(user.phone, forKey: "phone")
+        newUser.setValue(user.registerDate, forKey: "registerDate")
+        do {
+            try context.save()
+        } catch {
+            print("Failed saving repos in DB")
+        }
+    }
+    
+    func fetchLocalRepos() {
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "UserEntity")
+        
+        do {
+            let result = try context.fetch(request)
+            for data in result as! [NSManagedObject] {
+                if let name = data.value(forKey: "name") as? String,
+                   let surname = data.value(forKey: "surname") as? String,
+                   let gender = data.value(forKey: "gender") as? String,
+                   let email = data.value(forKey: "email") as? String,
+                   let picture = data.value(forKey: "picture") as? String,
+                   let phone = data.value(forKey: "phone") as? String,
+                   let registeredDate = data.value(forKey: "phone") as? String {
+                   let location = Location(street: "qaaaa", city: "bb", state: "ccc")
+                   let user = User(name: name, surname: surname,
+                         email: email, picture: picture,
+                         phone: phone, gender: gender,
+                         registerDate: registeredDate,
+                         location: location)
+                    
+                    randomUsers.insert(user)
+                }
+            }
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 }

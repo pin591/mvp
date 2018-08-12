@@ -106,7 +106,12 @@
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <navigationItem key="navigationItem" id="8qT-eB-2pg">
-                        <barButtonItem key="rightBarButtonItem" title="Fetch User" id="qT8-pQ-Ob1"/>
+                        <barButtonItem key="leftBarButtonItem" title="Filter" id="daP-OK-tUT"/>
+                        <barButtonItem key="rightBarButtonItem" title="Fetch User" id="qT8-pQ-Ob1">
+                            <connections>
+                                <action selector="FetchUser:" destination="BYZ-38-t0r" id="Uk5-LH-nel"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="LV2-lY-mD4" id="Vna-PR-6tT"/>
