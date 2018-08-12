@@ -9,38 +9,67 @@
 import UIKit
 import CoreData
 
-class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
+UIPickerViewDelegate, UIPickerViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
     var randomUsers = Set<User>()
     var selectedUser: User?
+    var dbManager = DBManager()
+    let filterFields = ["name","surname","email"]
+
     
     var url = URL(string: "https://api.randomuser.me/?results=2")!
     lazy var configuration: URLSessionConfiguration = URLSessionConfiguration.default
     lazy var session: URLSession = URLSession(configuration: self.configuration)
     typealias JSONDictionaryHandler = (([String:AnyObject]?) -> Void)
 
-    
     @IBAction func FetchUser(_ sender: Any) {
-        downloadJSONFromURL(_completion: { (data) in })
+        self.downloadJSONFromURL(_completion: { (data) in })
     }
     
+    @IBAction func FilterUsers(_ sender: Any) {
+        let alertController = UIAlertController(title: "Add filter",
+                                                message: "",
+                                                preferredStyle: .alert)
+        
+        let pickerView = UIPickerView(frame: CGRect(x: 30, y: 30, width: 200, height: 100))
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        alertController.view.addSubview(pickerView)
+        
+        let textField = UITextView(frame: CGRect(x: 30, y: 130, width: 200, height: 30))
+        alertController.view.addSubview(textField)
+
+        let confirmAction = UIAlertAction(title: "Enter", style: .default) { (_) in
+            
+            let filter = textField.text
+            var selectedValue = self.filterFields[pickerView.selectedRow(inComponent: 0)]
+
+            self.randomUsers = self.dbManager.fetchUser(field: selectedValue, filter: filter)
+            self.tableView.reloadData()
+        }
+        
+        alertController.addAction(confirmAction)
+        
+        let height = NSLayoutConstraint(item: alertController.view, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: self.view.frame.height * 0.30)
+        alertController.view.addConstraint(height);
+        self.present(alertController, animated: true, completion: nil)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchLocalRepos()
+        self.randomUsers = dbManager.fetchUser(field: nil, filter: nil)
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
-    func tableView(_ tableView:UITableView, numberOfRowsInSection section:Int) -> Int
-    {
+    func tableView(_ tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
         return randomUsers.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
-    {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "myCell", for: indexPath) as! CustomUICell
         let position = randomUsers.index(randomUsers.startIndex, offsetBy: indexPath.row)
         cell.printCell(user: randomUsers[position])
@@ -66,13 +95,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         self.randomUsers.insert(currentUser)
         DispatchQueue.main.async { [unowned self] in
-            self.saveUserLocally(user: currentUser)
+            self.dbManager.saveUserLocally(user: currentUser)
             self.tableView.reloadData()
         }
     }
     
-    func downloadJSONFromURL(_completion: @escaping JSONDictionaryHandler)
-    {
+    func downloadJSONFromURL(_completion: @escaping JSONDictionaryHandler) {
         let request = URLRequest(url: self.url)
         let dataTask = session.dataTask(with: request)
         {(data, response,error) in
@@ -100,9 +128,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         dataTask.resume()
     }
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration?
-    {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, handler) in
+        
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete")
+        { (action, view, handler) in
             let position = self.randomUsers.index(self.randomUsers.startIndex, offsetBy: indexPath.row)
             self.selectedUser = self.randomUsers[position]
             self.randomUsers.remove(at: position)
@@ -112,51 +141,16 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         return UISwipeActionsConfiguration(actions: [deleteAction])
     }
     
-    func saveUserLocally(user: User) {
-        
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let entity = NSEntityDescription.entity(forEntityName: "UserEntity", in: context)
-        let newUser = NSManagedObject(entity: entity!, insertInto: context)
-        newUser.setValue(user.name, forKey: "name")
-        newUser.setValue(user.surname, forKey: "surname")
-        newUser.setValue(user.gender, forKey: "gender")
-        newUser.setValue(user.email, forKey: "email")
-        newUser.setValue(user.picture, forKey: "picture")
-        newUser.setValue(user.phone, forKey: "phone")
-        newUser.setValue(user.registerDate, forKey: "registerDate")
-        do {
-            try context.save()
-        } catch {
-            print("Failed saving repos in DB")
-        }
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
     }
     
-    func fetchLocalRepos() {
-        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "UserEntity")
-        
-        do {
-            let result = try context.fetch(request)
-            for data in result as! [NSManagedObject] {
-                if let name = data.value(forKey: "name") as? String,
-                   let surname = data.value(forKey: "surname") as? String,
-                   let gender = data.value(forKey: "gender") as? String,
-                   let email = data.value(forKey: "email") as? String,
-                   let picture = data.value(forKey: "picture") as? String,
-                   let phone = data.value(forKey: "phone") as? String,
-                   let registeredDate = data.value(forKey: "phone") as? String {
-                   let location = Location(street: "qaaaa", city: "bb", state: "ccc")
-                   let user = User(name: name, surname: surname,
-                         email: email, picture: picture,
-                         phone: phone, gender: gender,
-                         registerDate: registeredDate,
-                         location: location)
-                    
-                    randomUsers.insert(user)
-                }
-            }
-        } catch let error {
-            print(error.localizedDescription)
-        }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return filterFields.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return filterFields[row]
     }
 }
+

@@ -12,6 +12,7 @@
 		9233252F211F431B00902CB2 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 9233252E211F431B00902CB2 /* Podfile */; };
 		92368893211F947800895325 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92368892211F947800895325 /* DetailViewController.swift */; };
 		926B7876211E143C0057EDA9 /* CustomUICell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 926B7875211E143C0057EDA9 /* CustomUICell.swift */; };
+		92C390FD2120A53200C4E551 /* DBManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92C390FC2120A53200C4E551 /* DBManager.swift */; };
 		92F336EE211DC87800D18CC7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F336ED211DC87800D18CC7 /* AppDelegate.swift */; };
 		92F336F0211DC87800D18CC7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F336EF211DC87800D18CC7 /* ViewController.swift */; };
 		92F336F3211DC87800D18CC7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 92F336F1211DC87800D18CC7 /* Main.storyboard */; };
@@ -53,6 +54,7 @@
 		9233252E211F431B00902CB2 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
 		92368892211F947800895325 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		926B7875211E143C0057EDA9 /* CustomUICell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUICell.swift; sourceTree = "<group>"; };
+		92C390FC2120A53200C4E551 /* DBManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBManager.swift; sourceTree = "<group>"; };
 		92F336EA211DC87800D18CC7 /* RandomUser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandomUser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		92F336ED211DC87800D18CC7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		92F336EF211DC87800D18CC7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -120,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				9233252A211F1C5600902CB2 /* Network */,
+				92C390FC2120A53200C4E551 /* DBManager.swift */,
 			);
 			path = DataLayer;
 			sourceTree = "<group>";
@@ -441,6 +444,7 @@
 				92F3371F211DC8C000D18CC7 /* User.swift in Sources */,
 				92F336F6211DC87800D18CC7 /* RandomUser.xcdatamodeld in Sources */,
 				9233252D211F1C8500902CB2 /* RandomApiDtos.swift in Sources */,
+				92C390FD2120A53200C4E551 /* DBManager.swift in Sources */,
 				92F33721211DCAD700D18CC7 /* Location.swift in Sources */,
 				92F336F0211DC87800D18CC7 /* ViewController.swift in Sources */,
 				92F336EE211DC87800D18CC7 /* AppDelegate.swift in Sources */,
