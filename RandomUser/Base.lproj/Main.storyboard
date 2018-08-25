@@ -11,10 +11,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Random User List View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="RandomUser" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="RandomUserListViewController" customModule="RandomUser" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -118,7 +118,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="tableView" destination="LV2-lY-mD4" id="Vna-PR-6tT"/>
+                        <outlet property="tableView" destination="LV2-lY-mD4" id="cJw-bc-yat"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -249,6 +249,7 @@
         <!--Filter View Controller-->
         <scene sceneID="xvL-Rs-BE2">
             <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cCE-L3-hLD" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="wkC-rH-Ind" customClass="FilterViewController" customModule="RandomUser" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="cd8-Qp-XfO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
@@ -301,7 +302,6 @@
                         <outlet property="text" destination="mbD-RD-Waa" id="fh8-sG-yBe"/>
                     </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cCE-L3-hLD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1800.8" y="-666.11694152923542"/>
         </scene>
